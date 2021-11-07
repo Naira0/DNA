@@ -21,7 +21,7 @@ public:
 
 	Iterator& operator++() { m_ptr++; return *this; }
 	
-	Iterator operator++(T)
+	Iterator operator++(int)
 	{
 		Iterator temp = *this;
 		++(*this);

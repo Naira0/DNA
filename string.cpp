@@ -1,7 +1,8 @@
 #include <sstream>
+#include <stdexcept>
 #include "string.hpp"
 
-String String::substr(size_t pos, size_t count)
+String String::substr(size_t pos, size_t count) const
 {
 	char* store = new char[count+1];
 	size_t i, j;
@@ -19,7 +20,7 @@ String String::substr(size_t pos, size_t count)
 	return String(store, true);
 }
 
-String String::substr(size_t pos) 
+String String::substr(size_t pos) const
 { 
 	if (pos >= m_size)
 		return (m_data + (m_size-1));

@@ -3,6 +3,7 @@
 #include <ostream>
 #include <cstring>
 #include <vector>
+#include <memory>
 
 class String
 {
@@ -47,13 +48,13 @@ public:
 		delete[] m_data;
 	}
 
-	constexpr char* data() const { return m_data; }
+	const char*     data() const { return m_data; }
 	char*			data()		 { return m_data; }
 
 	const char* c_str() { return const_cast<const char*>(m_data); }
 
-	constexpr size_t size() const { return m_size; }
-	constexpr size_t capacity() const { return m_capacity; }
+	size_t size() const { return m_size; }
+	size_t capacity() const { return m_capacity; }
 
 	char* begin() { return m_data; }
 	char* end() { return &m_data[m_size]; }
@@ -61,7 +62,7 @@ public:
 	char* begin() const { return m_data; }
 	char* end() const { return &m_data[m_size]; }
 
-	constexpr bool empty() const { return m_size == 0; }
+	bool empty() const { return m_size == 0; }
 
 	void clear();
 
@@ -88,8 +89,8 @@ public:
 
 	bool contains(const char* str) const;
 
-	String substr(size_t pos);
-	String substr(size_t pos, size_t count);
+    String substr(size_t pos) const;
+    String substr(size_t pos, size_t count) const;
 
 	bool operator==(String& str) const;
 	bool operator==(const char* str) const;
@@ -148,8 +149,6 @@ private:
 	char*  m_data;
 	size_t m_size;
 	size_t m_capacity;
-
-	using u_ptr = std::unique_ptr<char[]>;
 
 	inline char& get_element(size_t index) const;
 
