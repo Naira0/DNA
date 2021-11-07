@@ -136,12 +136,13 @@ public:
 
         delete temp->next;
         temp->next = nullptr;
+        m_tail = temp;
         m_size--;
     }
 
     T operator[](size_t index)
     {
-        if(index >= m_size)
+        if(index > m_size)
             throw std::out_of_range("Out of range");
 
         Node *temp = m_head;
