@@ -1,6 +1,7 @@
 #pragma once
 
 #include "forward_list.hpp"
+#include "double_list.hpp"
 
 template<typename T>
 class Stack
@@ -45,5 +46,5 @@ public:
 
 private:
     size_t m_size;
-    Forward_List<T> m_list;
+    List<T> m_list;
 };

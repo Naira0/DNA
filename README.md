@@ -7,8 +7,8 @@ This repo houses the data structures and algorithms im writing to get a better u
 * String
 * Bag
 * Array
-* Singly linked list
+* Singly & Doubly linked list
 * Stack
-* Queue  
+* Queue
 * Range
 

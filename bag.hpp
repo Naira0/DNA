@@ -15,9 +15,8 @@ public:
 
 	Bag(std::initializer_list<T> items) 
 	{
-		size_t item_size = items.size();
-		m_size			 = item_size;
-		m_capacity		 = item_size+1;
+		m_size			 = items.size();
+		m_capacity		 = m_size * 2;
 
 		m_items = new T[m_capacity];
 
@@ -32,7 +31,7 @@ public:
 	Bag()
 	{
 		m_size		= 0;
-		m_capacity	= 1;
+		m_capacity	= 10;
 		m_items		= new T[m_capacity];
 	}
 
