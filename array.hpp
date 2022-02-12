@@ -2,62 +2,99 @@
 
 #include <initializer_list>
 #include <cassert>
-#include <exception>
+#include <stdexcept>
 
 template<class T, size_t arr_size>
 class Array
 {
 public:
 
-	Array(std::initializer_list<T> elements)
-		: m_capacity(arr_size),
-		m_size(elements.size())
+	Array(std::initializer_list<T> items)
 	{
-		static_assert(arr_size > 0, "Array size must be greater then zero");
+        size_t i = 0;
+        for(auto &item : items)
+            m_data[i++] = std::move(item);
 
-		for (int i = 0; const auto& e : elements)
-		{
-			m_elements[i] = e;
-			i++;
-		}
+        if(i < arr_size-1)
+        {
+            for(; i < arr_size; i++)
+                m_data[i] = T();
+        }
 	}
 
-	size_t size() const { return m_size; };
+    Array() = default;
 
-	T at(size_t index) const { return get_element(index); }
-	T operator[](size_t index) const { return get_element(index); }
+    [[nodiscard]]
+    inline constexpr
+	T& at(size_t index)
+    {
+        return get_element(index);
+    }
 
-	T& at(size_t index) { return get_element(index); }
-	T& operator[](size_t index) { return get_element(index); }
+    [[nodiscard]]
+    inline constexpr
+	T& operator[](size_t index)
+    {
+        return get_element(index);
+    }
 
-	T front() const { return m_elements[0]; }
-	T back()  const { return m_elements[m_size - 1]; }
+    [[nodiscard]]
+    inline constexpr
+	T& front()
+    {
+        return m_data[0];
+    }
 
-	T* begin() { return m_elements; }
-	T* end()   { return &m_elements[m_size]; }
+    [[nodiscard]]
+    inline constexpr
+	T& back()
+    {
+        return m_data[arr_size - 1];
+    }
 
-	T* data() noexcept { return m_elements; }
+    [[nodiscard]]
+    inline constexpr
+    T* begin()
+    {
+        return m_data;
+    }
 
-	bool empty() const { return m_elements == &m_elements[m_size];  }
+    [[nodiscard]]
+    inline constexpr
+    T* end()
+    {
+        return &m_data[arr_size];
+    }
 
-	size_t max_size() const { return m_capacity; }
+    [[nodiscard]]
+    inline constexpr
+	T* data()
+    {
+        return m_data;
+    }
+
+    [[nodiscard]]
+    inline constexpr
+	bool empty() const
+    {
+        return arr_size == 0;
+    }
+
+    [[nodiscard]]
+    inline constexpr
+    size_t size() const
+    {
+        return arr_size;
+    };
 
 private:
-	T	   m_elements[arr_size];
-	size_t m_size;
-	size_t m_capacity;
+	T m_data[arr_size];
 
-	inline T get_element(size_t index) const
+    inline constexpr
+    T& get_element(size_t index)
 	{
-		if (index >= m_capacity)
+		if (index >= arr_size)
 			throw std::out_of_range("Provided index is out of bounds");
-		return m_elements[index];
-	}
-
-	inline T& get_element(size_t index) 
-	{
-		if (index >= m_capacity)
-			throw std::out_of_range("Provided index is out of bounds");
-		return m_elements[index];
+		return m_data[index];
 	}
 };
