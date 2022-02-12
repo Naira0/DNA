@@ -5,8 +5,9 @@ This repo houses the data structures and algorithms im writing to get a better u
 
 #### Data structures
 * String
-* Bag
+* Vector
 * Array
+* Hash table
 * Singly & Doubly linked list
 * Stack
 * Queue

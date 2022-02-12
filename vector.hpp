@@ -56,7 +56,7 @@ public:
         T *temp = new T[m_capacity];
 
         for(size_t i = 0; i < m_size; i++)
-            temp[i] = m_data[i];
+            temp[i] = std::move(m_data[i]);
 
         delete[] m_data;
         m_data = temp;
@@ -145,11 +145,16 @@ public:
 
     T& operator[](size_t index) const { return get_element(index); }
 
+    [[nodiscard]]
     T* begin() const { return m_data; }
 
+    [[nodiscard]]
     T* end() const { return &m_data[m_size]; }
 
+    [[nodiscard]]
     T& front() const { return get_element(0); }
+
+    [[nodiscard]]
     T& back() const { return get_element(m_size-1); }
 
     [[nodiscard]]
@@ -176,3 +181,23 @@ private:
         return m_data[index];
     }
 };
+
+void vector_bench(const size_t target)
+{
+    using namespace std::chrono;
+
+    Vector<int> vec;
+
+    vec.reserve(target+1);
+
+    auto start = system_clock::now();
+
+    for(size_t i = 0; i < target; i++)
+        vec.push_back(i);
+
+    auto end = system_clock::now();
+
+    std::cout
+            << "Time: "     << duration_cast<milliseconds>(end-start) << '\n'
+            << "Capacity: " << vec.capacity() << '\n';
+}
