@@ -11,5 +11,5 @@ This repo houses the data structures and algorithms im writing to get a better u
 * Singly & Doubly linked list
 * Stack
 * Queue
-* Range
+* range
 

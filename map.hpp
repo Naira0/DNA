@@ -140,7 +140,7 @@ public:
                 delete chain;
 
                 if(last == nullptr)
-                    m_table[h] = new Chain();
+                    m_table[h] = nullptr;
                 else
                     last->next = temp;
 

@@ -1,25 +1,27 @@
 #pragma once
 
-template<typename T>
-class Range
+#include "util.hpp"
+#include "common.hpp"
+
+class range
 {
 public:
 
-    Range(T start, T end, T step = 1) : m_start(start), m_end(end), m_step(step) {}
+    range(size_t start, size_t end, size_t step = 1) : m_start(start), m_end(end), m_step(step) {}
 
     class Range_iterator
     {
     private:
-        T m_current;
-        T m_step;
+        size_t m_current;
+        size_t m_step;
 
     public:
 
-        Range_iterator(T current, T step) : m_current(current), m_step(step) {}
+        Range_iterator(size_t current, size_t step) : m_current(current), m_step(step) {}
 
-        T operator*() { return m_current; }
-        T operator++(int) { return m_current += m_step; }
-        T& operator++() { return m_current += m_step; }
+        size_t operator*() { return m_current; }
+        size_t operator++(int) { return m_current += m_step; }
+        size_t& operator++() { return m_current += m_step; }
 
         friend bool operator!=(const Range_iterator &a, const Range_iterator &b) { return a.m_current < b.m_current+1; }
     };
@@ -28,13 +30,46 @@ public:
     Range_iterator end() { return Range_iterator(m_end, m_step); }
 
 private:
-    T m_start;
-    T m_end;
-    T m_step;
+    size_t m_start;
+    size_t m_end;
+    size_t m_step;
 };
 
-void range_test()
+template<is_container T>
+class Range
 {
-    for(auto i : Range(0, 525, 5))
-        std::cout << i << '\n';
-}
+public:
+
+    Range(T container) : container(container)
+    {}
+
+    template<typename FN>
+    inline Range& map(FN fn)
+    {
+        container::map(container, fn);
+        return *this;
+    }
+
+    template<typename FN>
+    inline Range& each(FN fn)
+    {
+        container::each(container, fn);
+        return *this;
+    }
+
+    template<typename FN>
+    inline Range& reduce(FN fn)
+    {
+        container::reduce(container, fn);
+        return *this;
+    }
+
+    inline auto sum() const
+    {
+       return container::sum(container);
+    }
+
+private:
+    T container;
+};
+
