@@ -119,6 +119,9 @@ public:
 
     void pop()
     {
+        if(m_size == 0)
+            return;
+
         Node *next = m_head->next;
         delete m_head;
         m_head = next;
@@ -127,6 +130,9 @@ public:
 
     void pop_back()
     {
+        if(m_size == 0)
+            return;
+
         Node *temp = m_head;
 
         while(temp->next->next != nullptr)

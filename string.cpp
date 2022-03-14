@@ -4,27 +4,34 @@
 
 String String::substr(size_t pos, size_t count) const
 {
-	char* store = new char[count+1];
 	size_t i, j;
+    String store(count+1);
 
 	if (pos >= m_size || pos + count > m_size)
-		return "";
+		return String();
 
 	for (i = pos, j = 0; j < count; i++, j++)
 	{
-		*(store + j) = *(m_data + i);
+		store += m_data[i];
 	}
 
-	*(store + j) = '\0';
+	store[j] = '\0';
 
-	return String(store, true);
+	return std::move(store);
 }
 
 String String::substr(size_t pos) const
 { 
 	if (pos >= m_size)
 		return (m_data + (m_size-1));
-	return (m_data + pos); 
+	return m_data + pos;
+}
+
+std::string_view String::substr_view(size_t pos) const
+{
+    if (pos >= m_size)
+        return (m_data + (m_size-1));
+    return m_data + pos;
 }
 
 void String::reserve(size_t new_size)
@@ -294,27 +301,22 @@ size_t String::index_of(const char c, size_t offset)
 std::vector<String> String::split(char delim) const
 {
 	std::vector<String> result;
-	String store(m_size);
-	size_t pos = 0;
+    size_t start = 0, current = 0;
 
 	for (const char c : *this)
 	{
-		pos++;
+        current++;
 
-		if (c == delim)
+        if (c == delim ||  current == m_size)
 		{
-			result.emplace_back(store);
-			store.clear();
+            size_t offset = current == m_size ? current-start : current-start-1;
+            String str = substr(start, offset);
 
-			continue;
+			result.emplace_back(std::move(str));
+
+            start = current;
 		}
-
-		store += c;
-
-		if (pos == m_size)
-			result.push_back(store);
 	}
-
 	return result;
 }
 
@@ -355,15 +357,16 @@ void String::insert(size_t index, const char c)
     m_size += 1;
 }
 
-String String::slice(size_t start, size_t end)
+String String::slice(size_t start, size_t end) const
 {
     if(start >= m_size || end >= m_size)
         return String();
 
     char *temp = new char[m_size+1];
+
     strncpy_s(temp, m_size+1, m_data+start, (end-start)+1);
 
-    return String(temp, true);
+    return temp;
 }
 
 

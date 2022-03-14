@@ -1,6 +1,7 @@
 #pragma once
 
 #include <initializer_list>
+#include <stdexcept>
 
 // i got kinda lazy on this one so it lacks a few methods and features from forward_list
 
@@ -51,6 +52,9 @@ public:
             m_tail = m_head;
 
         Node *node = new Node{data, nullptr, m_head};
+
+        if(m_head != nullptr)
+            m_head->last = node;
 
         m_head = node;
         m_size++;

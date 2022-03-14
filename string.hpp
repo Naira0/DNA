@@ -4,6 +4,7 @@
 #include <cstring>
 #include <vector>
 #include <memory>
+#include <iostream>
 
 class String
 {
@@ -24,6 +25,7 @@ public:
             m_data = new char[m_capacity];
             strcpy_s(m_data, m_capacity, data);
         }
+        std::cout << "created\n";
 	}
 
 	String(const String& str)
@@ -33,9 +35,21 @@ public:
 
 		m_data = new char[m_capacity];
 		strcpy_s(m_data, m_capacity, str.m_data);
+        std::cout << "created\n";
 	}
 
-	String(size_t reserve_size = 10)
+    String(String&& str) noexcept
+    {
+        m_size = str.m_size;
+        m_capacity = str.m_capacity;
+
+        m_data = str.m_data;
+        str.m_data = nullptr;
+
+        std::cout << "moved!\n";
+    }
+
+	explicit String(size_t reserve_size = 10)
 	{
 		m_size = 0;
 		m_capacity = reserve_size;
@@ -92,6 +106,8 @@ public:
     String substr(size_t pos) const;
     String substr(size_t pos, size_t count) const;
 
+    std::string_view substr_view(size_t pos) const;
+
 	bool operator==(String& str) const;
 	bool operator==(const char* str) const;
 
@@ -123,7 +139,7 @@ public:
 	void erase(size_t index);
 	void insert(size_t index, const char c);
 
-	String slice(size_t start, size_t end);
+	String slice(size_t start, size_t end) const;
 
 	template<typename T>
 	static String join(const std::vector<T>& vec, const char* symbol = "")

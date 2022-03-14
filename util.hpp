@@ -3,6 +3,8 @@
 #include <string>
 #include <sstream>
 #include <chrono>
+#include <vector>
+#include <cstdarg>
 
 template<typename T>
 concept is_container = requires(T t)
@@ -12,6 +14,8 @@ concept is_container = requires(T t)
     t.empty();
     t.size();
 };
+
+static constexpr size_t npos = -1;
 
 template<is_container T>
 std::string to_string(const T& container)
@@ -31,15 +35,48 @@ std::string to_string(const T& container)
 
     // written in this way to be compatible with all iterators
 
-    auto current = ++container.begin();
-    auto end     = --container.end();
+    auto current = container.begin()+1;
 
-    for(; current != end; current++)
+    for(; current != container.end()-1; current++)
         result << *current << ", ";
 
     result << *current << " ]";
 
     return result.str();
+}
+
+template<typename... A>
+std::string format(std::string_view fmt, const A&... a)
+{
+    std::string output;
+
+    output.reserve(fmt.size() * 2);
+
+    std::stringstream values;
+
+    ((values << a << '\0'), ...);
+
+    auto buffer = values.rdbuf()->str();
+    size_t offset = 0;
+
+    for(size_t i = 0; i < fmt.size(); i++)
+    {
+        if(fmt[i] == '{')
+        {
+            for(char c = buffer[offset++]; c; c = buffer[offset++])
+            {
+                output += c;
+            }
+
+            while(i < fmt.size() && fmt[i] != '}')
+                i++;
+            continue;
+        }
+
+        output += fmt[i];
+    }
+
+    return output;
 }
 
 std::string rand_str(size_t max_len)
@@ -61,8 +98,16 @@ std::string rand_str(size_t max_len)
     return output;
 }
 
+template<typename T>
+void swap(T& a, T& b)
+{
+    T temp = a;
+    a = b;
+    b = temp;
+}
+
 template<class FN, typename... Args>
-void benchmark(FN fn, Args&... a)
+size_t benchmark(FN fn, Args&... a)
 {
     using namespace std::chrono;
 
@@ -72,5 +117,25 @@ void benchmark(FN fn, Args&... a)
 
     auto end = high_resolution_clock::now();
 
-    std::cout << "function time: " << end-start << '\n';
+    return (end-start).count();
 }
+
+void fill_vec_random(std::vector<size_t>& vec, size_t target)
+{
+    vec.reserve(target);
+
+    std::random_device device;
+    std::mt19937 gen(device());
+    std::uniform_int_distribution<size_t> dist(1, target);
+
+    for(size_t i = 0; i < target; i++)
+        vec.push_back(dist(gen));
+}
+
+template<typename T>
+void fill_vec(std::vector<T> &vec, T value, size_t count)
+{
+    for(size_t i = 0; i < count; i++)
+        vec.push_back(value);
+}
+
