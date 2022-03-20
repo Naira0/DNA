@@ -48,6 +48,9 @@ std::string to_string(const T& container)
 template<typename... A>
 std::string format(std::string_view fmt, const A&... a)
 {
+    if(sizeof...(a) == 0)
+        return fmt.data();
+
     std::string output;
 
     output.reserve(fmt.size() * 2);
@@ -56,13 +59,16 @@ std::string format(std::string_view fmt, const A&... a)
 
     ((values << a << '\0'), ...);
 
-    auto buffer = values.rdbuf()->str();
+    std::string buffer = values.rdbuf()->str();
     size_t offset = 0;
 
     for(size_t i = 0; i < fmt.size(); i++)
     {
         if(fmt[i] == '{')
         {
+            if(fmt[++i] == '{')
+                goto concat;
+
             for(char c = buffer[offset++]; c; c = buffer[offset++])
             {
                 output += c;
@@ -73,6 +79,7 @@ std::string format(std::string_view fmt, const A&... a)
             continue;
         }
 
+        concat:
         output += fmt[i];
     }
 
